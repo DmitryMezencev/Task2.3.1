@@ -1,8 +1,10 @@
 package web.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import web.model.User;
 import web.service.UserService;
@@ -30,7 +32,10 @@ public class UserController {
     }
 
     @PostMapping()
-    public String addUser(@ModelAttribute("user") User user) {
+    public String addUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "new";
+        }
         userService.addUser(user);
         return "redirect:/users";
     }
@@ -42,7 +47,11 @@ public class UserController {
     }
 
     @PostMapping("/{id}")
-    public String updateUser(@ModelAttribute("user") User user, @RequestParam(value = "id") int id) {
+    public String updateUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult,
+                             @RequestParam(value = "id") int id) {
+        if(bindingResult.hasErrors()) {
+            return "edit";
+        }
         userService.updateUser(id, user);
         return "redirect:/users";
     }
